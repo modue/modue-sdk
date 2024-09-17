@@ -8,6 +8,7 @@
     * [Register Switch Widget](#registerSwitchWidget)
     * [Register Knob Widget](#registerKnobWidget)
     * [Register Led cluster Widget](#registerLedClusterWidget)
+    * [Register Screen Widget](#registerScreenWidget)
     * [Widgets base API](#widgetsBaseAPI)
     * [Widgets system API](#widgetsSystemAPI)
     * [Widgets configuration API](#widgetsConfigurationAPI)
@@ -218,6 +219,7 @@ configuration.registerSlider(...)
     // slider value on Device has been changed!
   });
 ```
+
 
 ## Register Key Widget <a id="registerKeyWidget"></a>
 
@@ -456,7 +458,7 @@ Led cluster widget extends `IWidgetInstance` by `numberOfLeds` property which re
 
 ```ts
 
-type LedValue = boolean | number | string | null;
+type LedValue =  string | null;
 
 IWidgetInstance {
   ...
@@ -475,13 +477,14 @@ configuration
     .registerOnInitializeHandler((instance) => {
       const ledsToFlash = Array.from(Array(instance.numberOfLeds)).map(() => {
         if (Math.random() > 0.5) {
-          return true; // ex. 1, hex number color - 4095 (white)
+          return "#FF0000FF"; // set color to red (in decimal: R = 255, G = 0, B = 0, Brightnes = 255)
+          // Color must be string representing a color in hex code for Red, Green, Blue channels (RGB) and brightnes
         }
 
-        return null;
+        return null; // null value turns off a LED
       });
 
-      instance.set(ledsToFlash);
+      instance.set(ledsToFlash); // Flash LEDs
     })
 ```
 
@@ -490,14 +493,29 @@ configuration
 ```js
 .registerLedCluster(...)
     .useSystemVolume((value, instance) => {
-      const numberOfLeds = Math.round((value * (instance.numberOfLeds - 1)) / 100)
+      const numberOfLeds = instance.numberOfLeds;
       const ledsToFlash = Array.from(Array(instance.numberOfLeds)).map((_, index) => {
-        return numberOfLeds >= index;
-      });
-
+          if(value > index/numberOfLeds * 100){ // volume value comapred to an index normalized to a value between 0 and 100
+            return "#FFFFFFFF" // Color white 
+          }
+          return null;
+        });
       instance.set(ledsToFlash);
     });
 ```
+
+## Register Screen Widget <a id="registerScreenWidget"></a>
+
+Work in progress
+
+The registerScreenWidget function is under development and will be available in a future release. This function will provide the ability to register and manage a screen widget within the SDK, offering extended functionality for display-based components.
+
+While the exact API and capabilities are still in active development, the following areas are likely to be covered:
+ - Screen rendering and update management.
+ - Interaction handling for touch or button input.
+ - Methods to set and retrieve screen content dynamically.
+
+Please check back in future SDK updates for full documentation and example usage.
 
 ## Widgets base API <a id="widgetsBaseAPI"></a>
 
@@ -554,7 +572,7 @@ configuration.registerSlider(...)
   })
   .registerOnDeactivateHandler((idToDeactivate) => {
     // slider has been deactivated!
-    const sliderInstanceIndex = sliderInstances.find(({ id }) => id === idToDeactivate)
+    const sliderInstanceIndex = sliderInstances.find(({ id }) => id === idToDeactivate);
 
     removeEventListerner('setSliderValue', sliderInstance.handleSetSliderValue);
 
@@ -588,12 +606,12 @@ configuration.registerSlider(...)
   .registerOnChangeHandler((value, instance) => {
     log.info('hey, slider value is', value);
 
-    instance.setSystemVolume(value)
+    instance.setSystemVolume(value);
   });
   .useSystemVolume((value, instance) => {
     log.info('hey, system value is', value);
 
-    instance.set(value)
+    instance.set(value);
   });
 ```
 
@@ -616,7 +634,7 @@ IWidgetInstance {
 ```js
 
 configuration.registerSlider(...)
-  addDropdown({
+  .addDropdown({
       key: 'selectedMicrophone',
       name: 'Select microphone device',
       description: 'Select the microphone to control',
@@ -725,7 +743,7 @@ configuration.registerKey(...)
     })
    .useSystemAvailableDevices((devices, instance) => {
       //Get device list on change
-      log.info(microphones);
+      log.info(devices);
     })
 ```
 
@@ -755,7 +773,7 @@ configuration.registerKey(...)
 | **useSystemMonitorResources** | `handler: func` | Register handler invoked when system resource state changed. <br><br> Definition:<br> ```function(resources: SystemMonitorResourcesPayload, instance IWidgetInstance) => void``` | 
 
 Payload structure: <br>  
-```
+```js
 interface CpuResource {
   usageInPercentage: number;
   temperatureInCelsius: number;
@@ -1030,7 +1048,7 @@ configuration.registerSlider(...)
     })
     .registerOnChangeHandler((value, instance) => {
       //Use selected value in handler action
-      log.info(instance.configuration?.exampleInputValue)
+      log.info(instance.configuration?.exampleInputValue);
     });
 ```
 
@@ -1515,6 +1533,40 @@ Definition:
 
 </td>
 </tr>
+<tr>
+<td>
+
+**addInput**
+
+</td>
+<td>
+
+`inputConfiguration: Object, inputType: string, options: Object`
+
+</td>
+<td>
+
+Add input configuration property
+
+Definition:
+```js
+inputConfiguration: {
+    key: string;
+    name: string;
+    description: string;
+}
+
+inputType: 'string' | 'number' | 'directory' | 'keystroke'
+
+options: {
+  min?: number;
+  max?: number;
+  required?: boolean;
+}
+```
+</td>
+</tr>
+
 </tbody>
 
 </table>
@@ -1527,7 +1579,7 @@ Definition:
 ```js
 // modue://{pluginName}?token=123
 
-configuration.
+configuration
   .useConfiguration()
   .useInternalAuthorizationHandler((parms) => { // { token: "123" }
     // Invoked authorization handler with query params
@@ -1539,7 +1591,7 @@ configuration.
 ```js
 // modue://{pluginName}/myTestAction?token=123
 
-configuration.
+configuration
   .useConfiguration()
   .useInternalAuthorizationHandler(...) // not invoked
   .useInternalAuthorizationHandler((parms) => { // { token: "123" }
@@ -1550,7 +1602,7 @@ configuration.
 #### Register button in configuration based on slider widget
 
 ```js
-configuration.
+configuration
   .useConfiguration()
   .addButton({
     key: 'testButton',
@@ -1561,6 +1613,20 @@ configuration.
       // invoke some action ex. external authorization
     },
   })
+```
+
+#### Register input in configuration to choose some directory path
+
+```js
+configuration
+  .useConfiguration()
+  .addInput({
+    key: 'testDirectoryPath',
+    name: 'Test input',
+    description: 'Test input description'
+  },
+  inputType ='directory'
+  )
 ```
 
 ## Plugin storage API <a id="pluginStorageAPI"></a>
@@ -1793,7 +1859,7 @@ Log info message
 
 ```js
 export default (configuration, storage, log) => {
-  log.info('This is my message for you!')
+  log.info('This is my message for you!');
 };
 
 ```
