@@ -1,6 +1,6 @@
 {
   "name": "@modue/boilerplate",
-  "version": "1.0.0",
+  "version": "1.0.8",
   "description": "This tool serves as a starting point for creating more advanced plugins. It provides a basic template that demonstrates how to configure a plugin to suit the user's individual needs.",
   "main": "index.js",
   "author": "Boiler Plate",
