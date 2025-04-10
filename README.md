@@ -6,7 +6,6 @@
     * [Plugin configuration](#pluginConfiguration)
     * [Register Slider Widget](#registerSliderWidget)
     * [Register Key Widget](#registerKeyWidget)
-    * [Register Switch Widget](#registerSwitchWidget)
     * [Register Knob Widget](#registerKnobWidget)
     * [Register Led cluster Widget](#registerLedClusterWidget)
     * [Register Display widget](#registerDisplayWidget)
@@ -357,67 +356,6 @@ configuration.registerKey(...)
 configuration.registerKey(...)
   .registerOnKeyDownHandler(() => {
     // key on Device has been downed
-  });
-```
-
-## Register Switch Widget <a id="registerSwitchWidget"></a>
-
-<table>
-<thead>
-
-<tr>
-<th> Name </th> <th> Arguments </th> <th> Description </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-
-**registerSwitch**
-
-</td>
-<td>
-
-`switchProps: Object, platform?: PLUGIN_PLATFORM`
-
-</td>
-<td>
-
-Register switch widget
-
-Definition:
-
-```js
-{
-    name: string,
-}
-```
-
-</td>
-</tr>
-</tbody>
-</table>
-
-```js
-export default (configuration) => {
-  configuration.registerSwitch({ name: 'muteMicrophone' });
-};
-```
-
-Slider widget functions
-
-| Name | Arguments | Description |
-|------|-----------|-------------|
-| **registerOnChangeHandler** | `handler: func` | Register handler invoked when switch value changed <br><br>  Definition:<br> ```function(value: boolean, instance IWidgetInstance) => void``` |
-
-### Examples
-
-Add on change handler to slider widget
-
-```js
-configuration.registerSwitch(...)
-  .registerOnChangeHandler((value, instance) => {
-    // switch value on Device has been changed!
   });
 ```
 
