@@ -1,0 +1,21 @@
+{
+  "name": "modue.boilerplate.cc",
+  "version": "1.0.11",
+  "main": "index.js",
+  "description": "A Proof of Concept plugin demonstrating the integration of a JavaScript SDK with a C++ logic layer using Electron, Node.js, node-gyp, and N-API.",
+  "scripts": {
+    "build": "npm i",
+    "install": "node-gyp rebuild",
+    "clean": "rm -rf build dist node_modules && npm cache clean --force && npx node-gyp clean",
+    "reinstall": "npm run clean && npm install"
+  },
+  "type": "module",
+  "author": "modue",
+  "license": "ISC",
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "node-addon-api": "^8.2.1"
+  },
+  "gypfile": true,
+  "devMode": true
+}

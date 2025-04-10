@@ -54,22 +54,6 @@ const boilerPlatePlugin = (configuration, storage, log) => {
     });
 
   configuration
-    .registerSwitch({ name: 'Basic - switch change event' })
-    .registerOnInitializeHandler((instance) => {
-      log.info(
-        `Instance with id:${instance.id} has been initialized with configuration:${JSON.stringify(instance.configuration)}`,
-      );
-    })
-    .registerOnChangeHandler((value, instance) => {
-      log.info(
-        `Instance with id:${instance.id} has change switch value:${value}`,
-      );
-    })
-    .registerOnDeactivateHandler((id) => {
-      log.info(`Instance with id:${id} has been deactivated`);
-    });
-
-  configuration
     .registerLedCluster({ name: 'Basic - led init event' })
     .registerOnInitializeHandler((instance) => {
       log.info(
